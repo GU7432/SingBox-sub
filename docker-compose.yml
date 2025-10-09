@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  singboxsub:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data:ro
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped

@@ -1,0 +1,7 @@
+# Ignore environment folder and common Python artifacts
+.env
+.env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/

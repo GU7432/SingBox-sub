@@ -1,0 +1,11 @@
+# 每個使用者對應一組 token 與對應配置檔名
+users:
+  gfw:
+    token: "jfisobndca"
+    config: "123.json"
+
+# 可選設定
+ip_whitelist: []         # 限定可訪問的 IP（留空=不檢查）
+min_pull_interval: 5  # 最小拉取間隔（秒）
+
+# curl "http://localhost:8000/sub?u=gfw&t=jfisobndca"
