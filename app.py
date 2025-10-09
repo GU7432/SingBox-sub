@@ -53,21 +53,21 @@ def sub():
     if not os.path.exists(conf_path):
         abort(404)
 
-    config_data = load_config(conf_path)
+    # 讀取原始檔案內容（不要在回傳中加入額外欄位）
+    with open(conf_path, "r", encoding="utf-8") as f:
+        raw = f.read()
+    # 解析為資料結構以生成穩定的版本雜湊（ETag），但不改變 raw 內容
+    config_data = json.loads(raw)
 
-    # 生成 metadata
+    # 生成版本雜湊（ETag）以支援快取
     version_hash = hashlib.sha256(json.dumps(config_data, sort_keys=True).encode()).hexdigest()[:16]
-    config_data["_meta"] = {
-        "user": u,
-        "version": version_hash,
-        "generated_at": now
-    }
 
     # ETag 支援（快取）
     if request.headers.get("If-None-Match") == version_hash:
         return Response(status=304)
 
-    resp = Response(json.dumps(config_data, ensure_ascii=False), mimetype="application/json")
+    # 回傳原始 JSON 檔案內容，不加入 _meta
+    resp = Response(raw, mimetype="application/json")
     resp.headers["ETag"] = version_hash
     resp.headers["Cache-Control"] = "no-store"
     return resp
