@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   singboxsub:
-    build: .
+    image: guaaaan244/singboxsub:v1.0
     ports:
       - "8000:8000"
     volumes:
