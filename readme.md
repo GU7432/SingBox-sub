@@ -1,79 +1,85 @@
 # SingBox-sub
 
-簡單的 Flask 應用，用來根據 `data/tokens.yaml` 與 `data/configs/` 回傳對應的設定 JSON。
+A small Flask app that serves sing-box JSON configs from `data/configs/` through
+token-protected subscription URLs.
 
-目前可直接使用已編譯完成的映像：`guaaaan244/singboxsub:v1.0`，不需要自行建置。
+It also includes a password-protected web GUI at `/admin` for:
 
-## 目錄結構（重點）
-- `app.py` - Flask 應用入口
-- `requirements.txt` - Python 相依
-- `data/` - 放 tokens.yaml 與 configs
-- `Dockerfile` - 建置映像檔用
-- `docker-compose.yml` - 方便開發/啟動
+- uploading `.json` config files
+- creating a blank `.json` config file
+- editing config JSON in the browser
+- creating named users with random tokens
+- generating subscription URLs
 
----
+## Project Structure
 
-## 先決條件
-- 已安裝 Docker（或 Podman）
-- 若使用 `docker compose`，請安裝 Docker Compose v2（或 `docker-compose`）
+- `main.py` - Flask application
+- `data/tokens.yaml` - users, tokens, and config bindings
+- `data/configs/` - sing-box JSON config files
+- `Dockerfile` - image build
+- `docker-compose.yml` - compose deployment example
 
-## 直接使用預編譯映像執行
+## Admin GUI
 
-1. 拉取映像：
+Set `ADMIN_PASSWORD` before opening `/admin`.
 
-```bash
-docker pull guaaaan244/singboxsub:v1.0
+The admin username is always:
+
+```text
+admin
 ```
 
-2. 背景（detached）執行容器：
+Example local run:
 
-```bash
-docker run -d --name singboxsub -p 8000:8000 -v "$(pwd)/data:/app/data:ro" guaaaan244/singboxsub:v1.0
+```powershell
+$env:ADMIN_PASSWORD = "your-strong-password"
+uv run python main.py
 ```
 
-說明：
-- `-d`：背景執行
-- `--name singboxsub`：容器名稱，方便管理
-- `-v "$(pwd)/data:/app/data:ro"`：把本機的 `data` 掛載到容器（唯讀）。若容器需寫入請移除 `:ro`。
-
-停止/查看日誌/移除容器：
+On bash-like shells:
 
 ```bash
-docker logs -f singboxsub
-docker stop singboxsub
-docker rm singboxsub
+ADMIN_PASSWORD=your-strong-password uv run python main.py
 ```
 
----
+Then open:
 
-## 使用 docker-compose（選用）
+```text
+http://localhost:8000/admin
+```
 
-若要用 compose 啟動，請先把 `docker-compose.yml` 內的：
+If `ADMIN_PASSWORD` is not set, `/admin` returns a setup error and does not show
+the GUI.
+
+## Subscription URL
+
+Each user in `data/tokens.yaml` maps a username and token to a JSON config:
 
 ```yaml
-build: .
+users:
+  gfw:
+    token: "jfisobndca"
+    config: "123.json"
+
+ip_whitelist: []
+min_pull_interval: 5
 ```
 
-改成：
+The subscription URL format is:
 
-```yaml
-image: guaaaan244/singboxsub:v1.0
+```text
+http://localhost:8000/sub?u=gfw&t=jfisobndca
 ```
 
-然後執行：
+## Docker
+Docker deployment is intentionally left for you to configure.
 
-```bash
-# 若使用 Docker Compose v2
-docker compose up -d
-# 或舊版 docker-compose
-docker-compose up -d
-```
+## Docker Compose
+Docker Compose deployment is intentionally left for you to configure.
 
-關閉並移除服務：
+## Notes
 
-```bash
-docker compose down
-```
-
-
-
+- Config filenames must end with `.json`.
+- Uploaded and edited configs are validated as JSON before saving.
+- The GUI saves JSON with indentation.
+- Generated tokens are URL-safe random strings.
