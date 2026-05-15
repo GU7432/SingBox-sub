@@ -1,0 +1,394 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  --bg: #f5f7fa;
+  --panel: #ffffff;
+  --panel-soft: #f9fbfd;
+  --text: #18212f;
+  --muted: #637083;
+  --line: #d9e1ea;
+  --primary: #1769aa;
+  --primary-soft: #e9f3fb;
+  --danger: #b3261e;
+  --danger-soft: #fff0ee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 22px clamp(16px, 4vw, 40px);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  margin-bottom: 6px;
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+h3 {
+  margin-bottom: 8px;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+p,
+span {
+  color: var(--muted);
+}
+
+main {
+  display: grid;
+  gap: 18px;
+  padding: 18px clamp(16px, 4vw, 40px) 36px;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stats span {
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-soft);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.message {
+  margin: 18px clamp(16px, 4vw, 40px) 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--primary);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.message.error {
+  border-left-color: var(--danger);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.config-panel,
+.editor-panel,
+.users-panel {
+  padding: 16px;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.panel-head p {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 10px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+input[type="checkbox"] {
+  width: auto;
+}
+
+button,
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+button.secondary,
+.button.secondary {
+  background: #fff;
+  color: var(--primary);
+}
+
+button.danger {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
+button.quiet {
+  min-height: 32px;
+  padding: 6px 10px;
+}
+
+button:disabled {
+  border-color: var(--line);
+  background: #eef0f3;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.compact-form {
+  margin-bottom: 14px;
+}
+
+.inline-fields,
+.select-form,
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.inline-fields input[type="file"] {
+  min-width: 0;
+}
+
+.config-list,
+.user-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.config-row,
+.user-row {
+  display: grid;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.config-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 10px;
+}
+
+.config-row.active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.config-link {
+  display: grid;
+  gap: 3px;
+  color: var(--text);
+  text-decoration: none;
+  min-width: 0;
+}
+
+.config-link strong,
+.user-row strong {
+  overflow-wrap: anywhere;
+}
+
+.config-link span,
+.user-row span {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.editor-head {
+  align-items: center;
+}
+
+.select-form select {
+  min-width: 180px;
+}
+
+.editor-form {
+  display: grid;
+  gap: 12px;
+}
+
+textarea {
+  min-height: 600px;
+  resize: vertical;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.empty,
+.empty-state {
+  color: var(--muted);
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  text-align: center;
+}
+
+.user-form {
+  display: grid;
+  grid-template-columns: minmax(160px, 1.1fr) minmax(160px, 1fr) minmax(180px, 1.3fr) auto auto;
+  gap: 12px;
+  align-items: end;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.checkbox-field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+  margin: 0;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.user-row {
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr) auto;
+  padding: 12px;
+}
+
+.user-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.subscription-cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.copy-button {
+  align-self: stretch;
+}
+
+code {
+  display: block;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 6px;
+  background: #eef3f8;
+  color: #1b3347;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+@media (max-width: 1100px) {
+  .workspace,
+  .user-form,
+  .user-row,
+  .subscription-cell {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-head,
+  .select-form,
+  .actions {
+    align-items: stretch;
+  }
+
+  .select-form,
+  .actions {
+    width: 100%;
+  }
+
+  .select-form select {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar,
+  .panel-head,
+  .inline-fields,
+  .config-row {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .topbar,
+  .panel-head,
+  .inline-fields,
+  .config-row,
+  .stats {
+    flex-direction: column;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  textarea {
+    min-height: 380px;
+  }
+}

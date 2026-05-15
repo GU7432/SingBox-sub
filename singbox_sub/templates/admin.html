@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SingBox-sub Admin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>SingBox-sub Admin</h1>
+      <p>先管理 config，再把 config 綁定給使用者。</p>
+    </div>
+    <div class="stats" aria-label="Summary">
+      <span>{{ configs | length }} configs</span>
+      <span>{{ users | length }} users</span>
+    </div>
+  </header>
+
+  {% if message %}
+    <div class="message {{ 'error' if message_type == 'error' else '' }}">{{ message }}</div>
+  {% endif %}
+
+  <main>
+    <section class="workspace" aria-labelledby="configs-title">
+      <aside class="panel config-panel">
+        <div class="panel-head">
+          <div>
+            <h2 id="configs-title">Configs</h2>
+            <p>新增、上傳、切換與刪除設定檔。</p>
+          </div>
+        </div>
+
+        <form class="compact-form" method="post" action="{{ url_for('admin.new_config') }}">
+          <label for="new_config_name">新增空白 config</label>
+          <div class="inline-fields">
+            <input id="new_config_name" name="name" required placeholder="new-config.json">
+            <button type="submit">新增</button>
+          </div>
+        </form>
+
+        <form class="compact-form" method="post" action="{{ url_for('admin.upload_config') }}" enctype="multipart/form-data">
+          <label for="file">上傳 JSON config</label>
+          <div class="inline-fields">
+            <input id="file" type="file" name="file" accept=".json,application/json" required>
+            <button type="submit">上傳</button>
+          </div>
+        </form>
+
+        <div class="config-list">
+          {% for config in configs %}
+            {% set used_by = config_users.get(config, []) %}
+            <article class="config-row {{ 'active' if config == selected_config else '' }}">
+              <a class="config-link" href="{{ url_for('admin.index', config=config) }}">
+                <strong>{{ config }}</strong>
+                {% if used_by %}
+                  <span>使用中：{{ used_by | join(', ') }}</span>
+                {% else %}
+                  <span>未被使用者引用</span>
+                {% endif %}
+              </a>
+
+              <form
+                method="post"
+                action="{{ url_for('admin.delete_config', name=config) }}"
+                onsubmit="return confirm('確定要刪除 {{ config }} 嗎？');"
+              >
+                <button
+                  class="danger quiet"
+                  type="submit"
+                  {% if used_by %}disabled title="此 config 仍被使用者引用"{% endif %}
+                >
+                  刪除
+                </button>
+              </form>
+            </article>
+          {% else %}
+            <p class="empty">尚未建立 config。</p>
+          {% endfor %}
+        </div>
+      </aside>
+
+      <section class="panel editor-panel" aria-labelledby="editor-title">
+        <div class="panel-head editor-head">
+          <div>
+            <h2 id="editor-title">Config 編輯器</h2>
+            {% if selected_config %}
+              <p>正在編輯：{{ selected_config }}</p>
+            {% else %}
+              <p>選擇或新增一個 config 後開始編輯。</p>
+            {% endif %}
+          </div>
+
+          <form method="get" action="{{ url_for('admin.index') }}" class="select-form">
+            <select name="config" aria-label="選擇 config">
+              {% for config in configs %}
+                <option value="{{ config }}" {% if config == selected_config %}selected{% endif %}>{{ config }}</option>
+              {% endfor %}
+            </select>
+            <button class="secondary" type="submit">切換</button>
+          </form>
+        </div>
+
+        {% if selected_config %}
+          <form class="editor-form" method="post" action="{{ url_for('admin.save_config', name=selected_config) }}">
+            <textarea id="json_text" name="json_text" spellcheck="false" aria-label="Config JSON">{{ selected_json }}</textarea>
+            <div class="actions">
+              <button type="submit">驗證並儲存</button>
+              <a class="button secondary" href="{{ url_for('admin.load_config', name=selected_config) }}">重新載入</a>
+            </div>
+          </form>
+        {% else %}
+          <div class="empty-state">
+            <h3>還沒有可編輯的 config</h3>
+            <p>從左側新增空白檔案，或上傳既有的 sing-box JSON。</p>
+          </div>
+        {% endif %}
+      </section>
+    </section>
+
+    <section class="panel users-panel" aria-labelledby="users-title">
+      <div class="panel-head">
+        <div>
+          <h2 id="users-title">使用者與訂閱網址</h2>
+          <p>建立使用者後，系統會產生 token 與訂閱 URL。</p>
+        </div>
+      </div>
+
+      <form class="user-form" method="post" action="{{ url_for('admin.users') }}">
+        <div>
+          <label for="username">使用者名稱</label>
+          <input id="username" name="username" required pattern="[A-Za-z0-9_.-]{1,64}" placeholder="gfw">
+        </div>
+
+        <div>
+          <label for="config">Config</label>
+          <select id="config" name="config" required>
+            {% for config in configs %}
+              <option value="{{ config }}">{{ config }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label for="token">Token</label>
+          <input id="token" name="token" placeholder="留空會自動產生">
+        </div>
+
+        <label class="checkbox-field">
+          <input type="checkbox" name="generate_token" value="1" checked>
+          自動產生 token
+        </label>
+
+        <button type="submit">儲存使用者</button>
+      </form>
+
+      <div class="user-list">
+        {% for username, info in users.items() %}
+          <article class="user-row">
+            <div>
+              <strong>{{ username }}</strong>
+              <span>{{ info.config }}</span>
+            </div>
+            <div class="subscription-cell">
+              <code>{{ subscription_urls[username] }}</code>
+              <button
+                class="secondary quiet copy-button"
+                type="button"
+                data-copy-text="{{ subscription_urls[username] }}"
+              >
+                複製
+              </button>
+            </div>
+            <form method="post" action="{{ url_for('admin.delete_user', name=username) }}" onsubmit="return confirm('確定要刪除使用者 {{ username }} 嗎？');">
+              <button class="danger quiet" type="submit">刪除</button>
+            </form>
+          </article>
+        {% else %}
+          <p class="empty">尚未建立使用者。</p>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll(".copy-button").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const text = button.dataset.copyText || "";
+        const originalText = button.textContent;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = "已複製";
+        } catch {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          const code = button.closest(".subscription-cell").querySelector("code");
+          range.selectNodeContents(code);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          button.textContent = "請手動複製";
+        }
+
+        window.setTimeout(() => {
+          button.textContent = originalText;
+        }, 1600);
+      });
+    });
+  </script>
+</body>
+</html>

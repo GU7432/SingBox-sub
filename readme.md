@@ -13,7 +13,14 @@ It also includes a password-protected web GUI at `/admin` for:
 
 ## Project Structure
 
-- `main.py` - Flask application
+- `main.py` - app entry point
+- `singbox_sub/app.py` - Flask app factory and blueprint registration
+- `singbox_sub/admin.py` - admin GUI routes
+- `singbox_sub/subscription.py` - `/sub` and `/healthz` routes
+- `singbox_sub/storage.py` - token/config file loading, saving, and validation
+- `singbox_sub/auth.py` - admin auth, client IP, and token helpers
+- `singbox_sub/templates/admin.html` - admin page markup
+- `singbox_sub/static/admin.css` - admin page styling
 - `data/tokens.yaml` - users, tokens, and config bindings
 - `data/configs/` - sing-box JSON config files
 - `Dockerfile` - image build
@@ -72,10 +79,17 @@ http://localhost:8000/sub?u=gfw&t=jfisobndca
 ```
 
 ## Docker
-Docker deployment is intentionally left for you to configure.
+
+Build and run locally:
+
+```bash
+docker build -t singbox-sub .
+docker run --rm -p 8000:8000 -e ADMIN_PASSWORD=your-strong-password -v ./data:/app/data singbox-sub
+```
 
 ## Docker Compose
-Docker Compose deployment is intentionally left for you to configure.
+Set `ADMIN_PASSWORD` in `docker-compose.yml` or through your deployment
+environment before opening `/admin`.
 
 ## Notes
 
