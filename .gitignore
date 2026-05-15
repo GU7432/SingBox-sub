@@ -41,6 +41,7 @@ dist/
 # Local application data variants
 data/*.local.*
 data/**/*.local.*
+data/
 
 # Editor and OS files
 .vscode/
