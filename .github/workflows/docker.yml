@@ -28,11 +28,9 @@ jobs:
         run: |
           echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
-      - name: Generate branch tag
+      - name: Generate version tag
         run: |
-          BRANCH_NAME=${GITHUB_REF_NAME,,}
-          BRANCH_NAME=${BRANCH_NAME//\//-}
-          echo "BRANCH_TAG=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
       - name: Build and push image
         uses: docker/build-push-action@v6
@@ -40,5 +38,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.BRANCH_TAG }}
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+            ${{ env.IMAGE_NAME }}:latest
