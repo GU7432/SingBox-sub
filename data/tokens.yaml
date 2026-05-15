@@ -1,6 +1,0 @@
-users:
-  '123':
-    token: vmyaQIHTTsetCCooBdUQELaeq0XOCBWzzdcUFmC0i4sx0dWP53izBEM6pdvgf6VPSRHs28C306SjQ4lemQ-KVQ
-    config: 123.json
-ip_whitelist: []
-min_pull_interval: 5
