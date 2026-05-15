@@ -1,10 +1,14 @@
 services:
-  singboxsub:
-    image: guaaaan244/singboxsub:v1.0
+  singbox-sub:
+    image: ghcr.io/gu7432/singbox-sub:[tag]
+    container_name: singbox-sub
+    restart: unless-stopped
+
     ports:
       - "8000:8000"
-    volumes:
-      - ./data:/app/data:ro
+
     environment:
-      - FLASK_ENV=production
-    restart: unless-stopped
+      ADMIN_PASSWORD: "0.00.0"
+
+    volumes:
+      - ./data:/app/data
