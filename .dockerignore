@@ -1,8 +1,46 @@
-__pycache__/
-*.pyc
-.pytest_cache/
-venv/
+# Git and local environment
 .git/
+.gitignore
+.dockerignore
+.env
+.env.*
+
+# Python virtual environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.cache/
+
+# Test, coverage, and build artifacts
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Runtime data and local files
+data/
 *.log
-data/*.db
+*.pid
+*.sqlite
+*.sqlite3
+*.db
+
+# Editor, OS, and frontend caches
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
 node_modules/

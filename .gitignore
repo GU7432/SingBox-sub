@@ -1,7 +1,51 @@
-# Ignore environment folder and common Python artifacts
+# Environment and local secrets
 .env
-.env/
+.env.*
+!.env.example
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python bytecode and caches
 __pycache__/
 *.py[cod]
+*$py.class
+.python-version~
+
+# Test, type-check, and coverage caches
 .pytest_cache/
-venv/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs and local runtime files
+*.log
+*.pid
+*.sqlite
+*.sqlite3
+*.db
+
+# Local application data variants
+data/*.local.*
+data/**/*.local.*
+
+# Editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
