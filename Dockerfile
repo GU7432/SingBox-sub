@@ -1,21 +1,18 @@
-FROM python:3.11-slim
-
-# 建置時安裝系統相依套件（如需）
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates gcc libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM ghcr.io/astral-sh/uv:python3.10-bookworm-slim
 
 WORKDIR /app
 
-# 複製相依並安裝（利用快取）
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+ENV PYTHONUNBUFFERED=1 \
+    UV_PROJECT_ENVIRONMENT=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
 
-# 複製程式碼
-COPY . /app
+# 先安裝鎖定的依賴，提升 Docker build cache 命中率
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+
+# 再複製應用程式原始碼
+COPY . .
 
 EXPOSE 8000
 
-ENV PYTHONUNBUFFERED=1
-
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "main:app"]
