@@ -1,0 +1,42 @@
+name: Build Docker image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate image name
+        run: |
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+      - name: Generate branch tag
+        run: |
+          BRANCH_NAME=${GITHUB_REF_NAME,,}
+          BRANCH_NAME=${BRANCH_NAME//\//-}
+          echo "BRANCH_TAG=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.BRANCH_TAG }}
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
